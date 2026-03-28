@@ -1,21 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\InfoController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/', function () {
-    return view('welcome', ['name' => 'Kanat Kozhakhmet']);
+    return redirect()->route('dashboard');
 });
-Route::get('/info', [InfoController::class, 'index']);
 
-Route::middleware(['auth', 'check.account'])->group(function () {
-
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
-        return "Dashboard page";
-    });
+        return view('dashboard');
+    })->name('dashboard');
 
+    Route::resource('articles', ArticleController::class);
+
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/account-inactive', function () {
-    return "Your account is not active.";
-});
+require __DIR__.'/auth.php';
